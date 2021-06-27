@@ -6,4 +6,6 @@ The application should provide endpoints for the following actions:
   * Delete file
   * Get file's short info. This will return the file size, its name and path
 
+Deadline: before the academy ends :) 
+
 Presentation: https://docs.google.com/presentation/d/1RawlqDITQYuychJs4oORbGEssA82QyMHZI_pVQ0sa8w/edit?usp=sharing
