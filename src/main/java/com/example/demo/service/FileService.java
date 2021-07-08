@@ -15,7 +15,6 @@ import java.util.Objects;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -25,13 +24,15 @@ public class FileService implements FileServiceImpl {
 
 
     @Override
-    public void upload(MultipartFile multipartFile) {
+    public boolean upload(MultipartFile multipartFile) {
+        boolean create = true;
         try {
             Files.copy(multipartFile.getInputStream(), this.root.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename())));
         } catch (IOException e) {
             e.printStackTrace();
+            create = false;
         }
-
+        return create;
 
     }
 
@@ -44,7 +45,7 @@ public class FileService implements FileServiceImpl {
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
-                throw new RuntimeException("Not read file");
+                throw new RuntimeException("File is not readable");
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("Error: " + e.getMessage());
@@ -52,44 +53,55 @@ public class FileService implements FileServiceImpl {
     }
 
     @Override
-    public void deleteFile(String filename) {
+    public boolean deleteFile(String filename) {
+        boolean isDelete = true;
         Path file = root.resolve(filename);
         try {
-            Files.deleteIfExists(file);
+            if (Files.deleteIfExists(file)) {
+                isDelete = true;
+            } else {
+                isDelete = false;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return isDelete;
     }
 
     @Override
-    public void updateFile(String existFileString, String newFileName) {
-       Path file = root.resolve(existFileString);
-       Path newFile = root.resolve(newFileName);
-        if(getFile(existFileString).exists()){
-        try {
-            Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }}
-        else {
-            System.out.println("not found file");
+    public boolean updateFile(String existFileName, String newFileName) {
+        Path file = root.resolve(existFileName);
+        Path newFile = root.resolve(newFileName);
+        boolean isUpdate = true;
+        if (getFile(existFileName).exists()) {
+            try {
+                Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                isUpdate = false;
+            }
+        } else {
+            isUpdate = false;
         }
+        return isUpdate;
     }
 
     @Override
     public FileInformation getInfoAboutFile(String file) {
         Resource resource = getFile(file);
         FileInformation fileInformation1 = new FileInformation();
-        if(resource.exists()){
-        try {
-            File file1 = resource.getFile();
-            fileInformation1.setPathOfFile(file1.getAbsolutePath());
-            fileInformation1.setNameOfFile(file1.getName());
-            fileInformation1.setSize(file1.length());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }}
-        else {fileInformation1 = null;}
+        if (resource.exists()) {
+            try {
+                File file1 = resource.getFile();
+                fileInformation1.setPathFile(file1.getAbsolutePath());
+                fileInformation1.setNameFile(file1.getName());
+                fileInformation1.setSize(file1.length());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            fileInformation1 = null;
+        }
 
         return fileInformation1;
     }

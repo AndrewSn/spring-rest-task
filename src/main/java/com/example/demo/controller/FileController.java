@@ -23,10 +23,13 @@ public class FileController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<String> uploadFile(@RequestParam("file")MultipartFile multipartFile) {
-        String message = "";
-        fileService.upload(multipartFile);
-        message = "upload is success";
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile multipartFile) {
+        String message;
+        if (fileService.upload(multipartFile)) {
+            message = "File was successfully uploaded";
+        } else {
+            message = "File creation was failed";
+        }
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
@@ -39,17 +42,23 @@ public class FileController {
 
     @DeleteMapping("/")
     public ResponseEntity<String> deleteFile(@RequestParam("file") String filename) {
-        String message = "";
-        fileService.deleteFile(filename);
-         message = "delete is success";
+        String message;
+        if (fileService.deleteFile(filename)) {
+            message = "File was successfully deleted";
+        } else {
+            message = "File was failed delete";
+        }
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 
     @PutMapping("/")
     public ResponseEntity<String> updateFile(@RequestParam("file") String filename, @RequestParam("newFile") String newFileName) {
-        String message = "";
-        fileService.updateFile(filename, newFileName);
-        message = "update is success";
+        String message;
+        if (fileService.updateFile(filename, newFileName)) {
+            message = "File was successfully updated";
+        } else {
+            message = "File was failed updated";
+        }
         return ResponseEntity.status(HttpStatus.OK).body(message);
     }
 

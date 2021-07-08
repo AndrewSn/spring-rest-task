@@ -5,10 +5,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileServiceImpl {
-    public void upload(MultipartFile multipartFile);
-    public Resource getFile(String filename);
-    public void deleteFile(String filename);
-    public void updateFile(String existNameFile, String newNameFile);
-    public FileInformation getInfoAboutFile(String file);
+    boolean upload(MultipartFile multipartFile);
+
+    Resource getFile(String filename);
+
+    boolean deleteFile(String filename);
+
+    boolean updateFile(String existNameFile, String newNameFile);
+
+    FileInformation getInfoAboutFile(String file);
 
 }
